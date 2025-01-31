@@ -26,5 +26,12 @@ def get_weather(city: str):
 	if not lat or not lon:
 		return { 'error': f'No location information for {city}' }, 400
 
-	weather_response = requests.get(f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}')
-	return weather_response.json(), weather_response.status_code
+	weather_response = requests.get(f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&units=metric&appid={api_key}')
+	weather_json = weather_response.json()
+	if not 'main' in weather_json:
+		return weather_json, weather_response.status_code
+
+	response = weather_json['main']
+	response['units'] = 'metric'
+	response['city'] = city
+	return response
